@@ -161,13 +161,14 @@
 
     <script>
         const ENCRYPTED = "U2FsdGVkX1/MhyUEKvdrBg4lkHNpvnyJqFuvY8HMVlM=";
+        const CHECKSUM = "85b1d62ad9e2d8b83debac42eec469a46266295713217ac4ef346148396979d3";
 
         /*
            @param {string[]} input array of strings
         */
         function getDecryptionKey(input) {
             let key = "";
-            if (input.constructor !== Array || input.length !== 4) return; // return if the input is not in the correct format
+            if (input.constructor !== Array || input.length !== 4) return console.log(atob("VGhhdCBkb2Vzbid0IGxvb2sgbGlrZSBhbiBhcnJheSBvZiBsZW5ndGggNC4uLg==")); // return if the input is not in the correct format
 
             for (const str of input) {
                 for (let i = 0; i < str.length; i++) {
@@ -184,6 +185,7 @@
             // get the decryption key ("decryption_key" in the query-string) from the URL's query-string
             const decryption_key = query.get("decryption_key");
             if (!decryption_key) return; // if no decryption_key is given, don't try to decrypt the link
+            if (CryptoJS.SHA256(decryption_key).toString() !== CHECKSUM) return;
             const link = CryptoJS.AES.decrypt(ENCRYPTED, decryption_key).toString(CryptoJS.enc.Utf8);
 
             window.location.href = "https://discord.gg/" + link;
